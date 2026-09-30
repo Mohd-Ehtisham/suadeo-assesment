@@ -9,6 +9,7 @@ A modular Employee Management application built with **React 19**, **TypeScript*
 - **TanStack React Query** — data fetching, caching, optimistic mutations
 - **Tailwind CSS v4** — utility-first styling with `@tailwindcss/vite`
 - **Radix UI** — accessible Dialog and Select primitives (shadcn pattern)
+- **Vitest** + **React Testing Library** — unit tests
 - **Vite 8** — dev server with HMR
 
 ## Features
@@ -74,6 +75,18 @@ npm run build
 npm start
 ```
 
+### Run Tests
+
+```bash
+npm test
+```
+
+To run in watch mode:
+
+```bash
+npm run test:watch
+```
+
 ### Type Checking
 
 ```bash
@@ -113,6 +126,9 @@ app/
 │   ├── sanitize.ts          # Input validation & XSS protection
 │   ├── exportUtils.ts       # CSV/JSON export with formula-injection guard
 │   └── helpers.ts           # Pagination helpers, constants
+├── __tests__/
+│   ├── setup.ts             # Test setup (jest-dom matchers)
+│   └── EmployeeForm.test.tsx # Form validation & button tests
 ├── routes.ts                # Route config
 ├── root.tsx                 # App shell (QueryClientProvider)
 └── app.css                  # Tailwind + shadcn theme + animations
@@ -129,3 +145,21 @@ All endpoints hit the MockAPI base URL defined in `.env`:
 | `POST`   | `/employee`       | Create new employee  |
 | `PUT`    | `/employee/:id`   | Update employee      |
 | `DELETE` | `/employee/:id`   | Delete employee      |
+
+## Testing
+
+Tests are written with **Vitest** and **React Testing Library** (`@testing-library/react` + `@testing-library/user-event`).
+
+| Test | What it validates |
+| ---- | ----------------- |
+| renders all form fields | All 6 fields are present in the DOM |
+| renders submit and cancel buttons | Both action buttons render |
+| renders custom submit label | Dynamic label prop works |
+| shows validation errors on empty submit | Required-field errors appear, `onSubmit` not called |
+| shows error for invalid first name | Numbers rejected in name field |
+| shows error for invalid email | Invalid email format rejected |
+| rejects markup in first name (XSS) | `<script>` tags blocked |
+| rejects markup in email (XSS) | `<img>` tags blocked |
+| calls onCancel on cancel click | Cancel button fires callback |
+| disables buttons when disabled | Both buttons disabled during save |
+| validation errors have role=alert | Accessibility: errors announced to screen readers |
