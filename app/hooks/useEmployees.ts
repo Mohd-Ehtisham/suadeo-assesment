@@ -170,9 +170,7 @@ export function useEmployees() {
     addEmployee: addMutation.mutateAsync,
     updateEmployee: editMutation.mutateAsync,
     removeEmployee: deleteMutation.mutateAsync,
-    isMutating:
-      addMutation.isPending ||
-      editMutation.isPending ||
-      deleteMutation.isPending,
+    isSaving: addMutation.isPending || editMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 }

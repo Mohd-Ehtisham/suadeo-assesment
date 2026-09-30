@@ -54,8 +54,9 @@ export function EmployeeRecords() {
   const [editor, setEditor] = useState<EditorState>(null);
   const [pendingDelete, setPendingDelete] = useState<Employee | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+
+  const saving = records.isSaving;
+  const deleting = records.isDeleting;
 
   const openCreate = useCallback(() => setEditor({ mode: "create" }), []);
   const closeEditor = useCallback(() => setEditor(null), []);
@@ -66,7 +67,6 @@ export function EmployeeRecords() {
 
   const onSubmit = useCallback(
     async (draft: EmployeeDraft) => {
-      setSaving(true);
       try {
         if (editor?.mode === "edit") {
           await records.updateEmployee({ id: editor.employee.id, draft });
@@ -77,8 +77,6 @@ export function EmployeeRecords() {
         setNotice(null);
       } catch {
         setNotice("Failed to save record. Please try again.");
-      } finally {
-        setSaving(false);
       }
     },
     [editor, records],
@@ -86,7 +84,6 @@ export function EmployeeRecords() {
 
   const confirmDelete = useCallback(async () => {
     if (!pendingDelete) return;
-    setDeleting(true);
     try {
       await records.removeEmployee(pendingDelete.id);
       setPendingDelete(null);
@@ -94,8 +91,6 @@ export function EmployeeRecords() {
     } catch {
       setNotice("Failed to delete record. Please try again.");
       setPendingDelete(null);
-    } finally {
-      setDeleting(false);
     }
   }, [pendingDelete, records]);
 
